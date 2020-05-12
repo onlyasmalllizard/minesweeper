@@ -39,6 +39,8 @@ class Board
             i += 1
         end
 
+        upper_coordinates.unshift(" ", " ")
+        horizontal_line.unshift("_", "_")
         display.unshift(upper_coordinates, horizontal_line)
 
         # render board on screen
