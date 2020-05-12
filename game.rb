@@ -42,8 +42,28 @@ class Game
     end
 
     def play_turn
-        puts "Enter the position you want to select in the format 'x,y':"
+        location = []
 
+        while !valid_location?(location)
+            puts "Enter the position you want to select in the format 'x,y':"
+            location = process_location_input(gets.chomp)
+        end
+
+        @board.flip_tiles(location)
+    end
+
+    def process_location_input(string)
+        location = string.split(',')
+        location[0], location[1] = location[1].to_i, location[0].to_i
+    end
+
+    def valid_location?(location)
+        if location.length == 2
+            location.each { |coordinate| return false if coordinate < 0 || coordinate > @size }
+            true
+        else
+            false
+        end
     end
 
     def won?

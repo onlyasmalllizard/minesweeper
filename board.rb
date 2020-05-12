@@ -70,28 +70,21 @@ class Board
         count = 0
             
         3.times do
-            count += check_row([x, y])
+            count += count_bombs_in_row([x, y])
             x += 1
         end
         count
     end
 
-    def check_row(location)
+    def count_bombs_in_row(location)
         x, y = location[0], location[1]
         squares_to_count = 3
         count = 0
 
         return count if x < 0 || x >= @grid_size
+        adjustments_needed = self.adjust_squares_to_check(squares_to_count, y)
 
-        while y < 0
-            y += 1
-            squares_to_count -= 1
-        end
-
-        while y >= @grid_size
-            y -= 1
-            squares_to_count -= 1
-        end
+        squares_to_count, y = adjustments_needed[0], adjustments_needed[1]
 
         squares_to_count.times do
             if @grid[x][y]
@@ -121,6 +114,49 @@ class Board
     end
 
     def flip_tiles(location)
+        x, y = location[0], location[1]
+    
+        @grid[x][y].reveal
 
+        if !@grid[x][y].is_bomb? && !self.nearby_bomb?(location)
+            # determine how many rows we have to check and which x-coodinate to begin with
+            num_rows_details = adjust_squares_to_check(3, x - 1)
+            num_rows, working_x = num_rows_details[0], num_rows_details[1]
+
+            # determine how long each row is. the starting y-coordinate stays in row_details for later
+            row_details = adjust_squares_to_check(3, y)
+            row_length = row_details[0]
+
+            num_rows.times do
+                working_y = row_details[1]
+                row_length.times do
+                    flip_tiles([working_x, working_y])
+                    working_y += 1
+                end
+                working_x += 1
+            end
+        end
+    end
+
+    def nearby_bomb?(location)
+        if count_bombs(location) > 0
+            true
+        else
+            false
+        end
+    end
+
+    def adjust_squares_to_check(num_to_check, coordinate)
+        while coordinate < 0
+            coordinate += 1
+            num_to_check -= 1
+        end
+
+        while coordinate >= @grid_size
+            coordinate -= 1
+            num_to_check -= 1
+        end
+
+        [num_to_check, coordinate]
     end
 end
