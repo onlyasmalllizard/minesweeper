@@ -37,8 +37,13 @@ class Game
     def run
         while !self.won? && !self.lost?
             @board.render
-
+            self.play_turn
         end
+    end
+
+    def play_turn
+        puts "Enter the position you want to select in the format 'x,y':"
+
     end
 
     def won?

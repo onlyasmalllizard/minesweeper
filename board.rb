@@ -12,17 +12,37 @@ class Board
 
     def render
         system('clear')
+        display = []
+
+        # translate game data into on screen representation
         @grid.each do |row|
-            display = []
+            line = []
             row.each do |tile|
                 if tile.faceup
-                    display << tile.value
+                    line << tile.value
                 else
-                    display << tile.back
+                    line << tile.back
                 end
             end
-            puts display.join(" ")
+            display << line
         end
+
+        # add coordinates and formatting
+        i = 0
+        upper_coordinates = []
+        horizontal_line = []
+
+        while i < @grid_size
+            upper_coordinates << i
+            horizontal_line << "_"
+            display[i].unshift(i, "|")
+            i += 1
+        end
+
+        display.unshift(upper_coordinates, horizontal_line)
+
+        # render board on screen
+        display.each { |row| puts row.join(" ") }
     end
 
     def plant_bombs(num_bombs)
@@ -98,5 +118,9 @@ class Board
         end
 
         false
+    end
+
+    def flip_tiles(location)
+
     end
 end
