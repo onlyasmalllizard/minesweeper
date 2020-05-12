@@ -11,6 +11,7 @@ class Board
     end
 
     def render
+        system('clear')
         @grid.each do |row|
             display = []
             row.each do |tile|
@@ -82,11 +83,20 @@ class Board
         
         count
     end
+
+    def all_tiles_revealed?
+        @grid.each do |row|
+            row.each { |tile| return false if !tile.is_bomb? && !tile.faceup }
+        end
+
+        true
+    end
+
+    def bomb_revealed?
+        @grid.each do |row|
+            row.each { |tile| return true if tile.is_bomb? && tile.faceup }
+        end
+
+        false
+    end
 end
-
-board = Board.new(9)
-
-board.plant_bombs(10)
-board.gen_tiles
-
-board.render
