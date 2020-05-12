@@ -13,7 +13,13 @@ class Board
     def render
         @grid.each do |row|
             display = []
-            row.each { |tile| display << tile.value }
+            row.each do |tile|
+                if tile.faceup
+                    display << tile.value
+                else
+                    display << tile.back
+                end
+            end
             puts display.join(" ")
         end
     end

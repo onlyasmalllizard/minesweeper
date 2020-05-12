@@ -4,13 +4,13 @@ class Tile
 
     attr_accessor :value
 
-    attr_reader :bomb
+    attr_reader :faceup, :back
 
     def initialize(is_bomb, value)
         @bomb = is_bomb
         @value = colour_value(value)
         @faceup = false
-        @tile_back = " ".colorize(:background => :light_black)
+        @back = " ".colorize(:background => :light_black)
     end
 
     def reveal
