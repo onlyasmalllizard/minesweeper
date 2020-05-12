@@ -120,19 +120,31 @@ class Board
     
         @grid[x][y].reveal
 
-        if !@grid[x][y].is_bomb? && !self.nearby_bomb?(location)
+        if !@grid[x][y].is_bomb?
             # determine how many rows we have to check and which x-coodinate to begin with
             num_rows_details = adjust_squares_to_check(3, x - 1)
             num_rows, working_x = num_rows_details[0], num_rows_details[1]
 
             # determine how long each row is. the starting y-coordinate stays in row_details for later
-            row_details = adjust_squares_to_check(3, y)
+            row_details = adjust_squares_to_check(3, y - 1)
             row_length = row_details[0]
 
             num_rows.times do
                 working_y = row_details[1]
                 row_length.times do
-                    flip_tiles([working_x, working_y])
+                    # rescue statement saves program from crashing if coordinates are out-of-bounds
+                    begin
+                        # recursive call if tile is not bomb AND not faceup AND has no bombs for neighbours
+                        if !@grid[working_x][working_y].is_bomb? && !@grid[working_x][working_y].faceup &&
+                            !self.nearby_bomb?([working_x, working_y])
+                            self.flip_tiles([working_x, working_y])
+                        # otherwise just flip tile if it's not a bomb    
+                        elsif !@grid[working_x][working_y].is_bomb?
+                            @grid[working_x][working_y].reveal
+                        end
+                    rescue
+                        break
+                    end
                     working_y += 1
                 end
                 working_x += 1

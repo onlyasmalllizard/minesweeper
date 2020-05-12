@@ -39,6 +39,7 @@ class Game
             @board.render
             self.play_turn
         end
+        @board.render
     end
 
     def play_turn
