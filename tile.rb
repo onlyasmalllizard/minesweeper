@@ -2,15 +2,20 @@ class Tile
 
     attr_accessor :value
 
-    def initialize(is_bomb)
+    attr_reader :bomb
+
+    def initialize(is_bomb, value)
         @bomb = is_bomb
-        @value = determine_value
+        @value = value
+        @faceup = false
     end
 
-    def determine_value
-        return "!" if @bomb
+    def reveal
+        @faceup = true
+    end
 
-        " "
+    def is_bomb?
+        @bomb
     end
 
 end
