@@ -3,15 +3,16 @@ require_relative 'board.rb'
 class Game
 
     def initialize
-        # creates an empty board of a player specified size
+        # Creates an empty board of a player specified size
         @size = get_size
         @board = Board.new(@size)
 
-        # generates the placement of bombs and other tiles
+        # Generates the placement of bombs and other tiles
         @board.plant_bombs(self.get_num_bombs)
         @board.gen_tiles
     end
 
+    # Allow the player to choose the size of the board
     def get_size
         size = 0
 
@@ -23,6 +24,7 @@ class Game
         size
     end
 
+    # Allow the player to choose the number of bombs
     def get_num_bombs
         num_bombs = 0
 
@@ -53,11 +55,13 @@ class Game
         @board.flip_tiles(location)
     end
 
+    # Converts string to an array of integers. Integers must be swapped in order to work as "x,y" instead of "y,x"
     def process_location_input(string)
         location = string.split(',')
         location[0], location[1] = location[1].to_i, location[0].to_i
     end
 
+    # Make sure the location given matches a space on the board
     def valid_location?(location)
         if location.length == 2
             location.each { |coordinate| return false if coordinate < 0 || coordinate > @size }
