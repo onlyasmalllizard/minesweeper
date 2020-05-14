@@ -32,11 +32,11 @@ class Tile
     end
 
     def flag
-        @flag = true
+        @flagged = true
     end
 
     def unflag
-        @flag = false
+        @flagged = false
     end
 
     def flagged?

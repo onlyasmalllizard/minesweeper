@@ -46,29 +46,59 @@ class Game
 
     def play_turn
         location = []
+        action = ''
 
         while !valid_location?(location)
             puts "Enter the position you want to select in the format 'x,y':"
             location = process_location_input(gets.chomp)
         end
 
-        @board.flip_tiles(location)
+        while !valid_action(action)
+            puts "What would you like to do? Enter 'r' to reveal the tile or 'f' to flag the tile as a bomb."
+            puts "If you would like to remove a flag from the tile, enter 'u'."
+
+            action = (gets.chomp.downcase)
+        end
+
+        if action == "r"
+            @board.flip_tiles(location)
+        elsif action == "f"
+            @board.flag_tile(location)
+        else
+            @board.unflag_tile(location)
+        end
     end
 
     # Converts string to an array of integers. Integers must be swapped in order to work as "x,y" instead of "y,x"
     def process_location_input(string)
         location = string.split(',')
-        location[0], location[1] = location[1].to_i, location[0].to_i
+        location.map!(&:to_i)
+
+        if valid_location?(location)
+            location[0], location[1] = location[1], location[0]
+        end
+
+        location
     end
 
     # Make sure the location given matches a space on the board
     def valid_location?(location)
         if location.length == 2
-            location.each { |coordinate| return false if coordinate < 0 || coordinate > @size }
-            true
+            begin
+                location.each { |coordinate| return false if coordinate < 0 || coordinate > @size }
+                true
+            rescue
+                false
+            end
         else
             false
         end
+    end
+
+    # Make sure the user has specified an existing action
+    def valid_action(action)
+        return true if action == "r" || action == "f" || action == "u"
+        false
     end
 
     def won?

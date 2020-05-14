@@ -1,4 +1,5 @@
 require_relative "tile.rb"
+require 'colorize'
 require 'byebug'
 
 class Board
@@ -74,6 +75,8 @@ class Board
             row.each do |tile|
                 if tile.faceup?
                     line << tile.value
+                elsif tile.flagged?
+                    line << "P".colorize(:color => :white, :background => :light_black)
                 else
                     line << tile.back
                 end
@@ -105,29 +108,31 @@ class Board
     # for neighbours, flip_tiles is called on them as well
     def flip_tiles(location)
         x, y = location[0], location[1]
+
+        return if @grid[x][y].flagged?
     
         @grid[x][y].reveal
 
         if !@grid[x][y].is_bomb?
-            # determine how many rows we have to check and which x-coodinate to begin with
+            # Determine how many rows we have to check and which x-coodinate to begin with
             num_rows_details = adjust_squares_to_check(3, x - 1)
             num_rows, working_x = num_rows_details[0], num_rows_details[1]
 
-            # determine how long each row is. the starting y-coordinate stays in row_details for later
+            # Determine how long each row is. the starting y-coordinate stays in row_details for later
             row_details = adjust_squares_to_check(3, y - 1)
             row_length = row_details[0]
 
             num_rows.times do
                 working_y = row_details[1]
                 row_length.times do
-                    # rescue statement saves program from crashing if coordinates are out-of-bounds
+                    # Rescue statement saves program from crashing if coordinates are out-of-bounds
                     begin
-                        # recursive call if tile is not bomb AND not faceup AND has no bombs for neighbours
+                        # Recursive call if tile is not bomb AND not faceup AND not flagged AND has no bombs for neighbours
                         if !@grid[working_x][working_y].is_bomb? && !@grid[working_x][working_y].faceup? &&
-                            !self.nearby_bomb?([working_x, working_y])
+                            !grid[working_x][working_y].flagged? && !self.nearby_bomb?([working_x, working_y])
                             self.flip_tiles([working_x, working_y])
-                        # otherwise just flip tile if it's not a bomb    
-                        elsif !@grid[working_x][working_y].is_bomb?
+                        # Otherwise just flip tile if it's not a bomb AND not flagged   
+                        elsif !@grid[working_x][working_y].is_bomb? && !grid[working_x][working_y].flagged?
                             @grid[working_x][working_y].reveal
                         end
                     rescue
@@ -138,6 +143,18 @@ class Board
                 working_x += 1
             end
         end
+    end
+
+    # Place a flag on the specified tile
+    def flag_tile(location)
+        x, y = location[0], location[1]
+        @grid[x][y].flag
+    end
+
+    # Remove flag from specified tile
+    def unflag_tile(location)
+        x, y = location[0], location[1]
+        @grid[x][y].unflag
     end
 
     # A bomb is nearby if it is touching the location either diagonally or orthogonally
