@@ -1,10 +1,9 @@
 require_relative "tile.rb"
 require 'colorize'
-require 'byebug'
 
 class Board
 
-    attr_reader :grid
+    attr_reader :grid, :grid_size
 
     def initialize(size)
         @grid = Array.new(size) { Array.new(size) }
@@ -74,9 +73,9 @@ class Board
             line = []
             row.each do |tile|
                 if tile.faceup?
-                    line << tile.value
+                    line << " #{tile.value}"
                 elsif tile.flagged?
-                    line << "P".colorize(:color => :white, :background => :light_black)
+                    line << "  ".colorize(:background => :red)
                 else
                     line << tile.back
                 end
@@ -90,14 +89,25 @@ class Board
         horizontal_line = []
 
         while i < @grid_size
-            upper_coordinates << i
-            horizontal_line << "_"
-            display[i].unshift(i, "|")
+            horizontal_line << "__"
+
+            # Add a space to smaller coordinates so that everything is laid out evenly no matter how
+            # large the board is
+            if i < 10
+                upper_coordinates << " #{i}"
+                display[i].unshift(i, " |")
+            else
+                upper_coordinates << i
+                display[i].unshift(i, "|")
+            end
+
             i += 1
         end
 
-        upper_coordinates.unshift(" ", " ")
-        horizontal_line.unshift("_", "_")
+        # Offset the upper coordinates so that they're not over the horizontal coordinates
+        upper_coordinates.unshift("    ")
+        horizontal_line.unshift("___ ")
+
         display.unshift(upper_coordinates, horizontal_line)
 
         # Render board on screen

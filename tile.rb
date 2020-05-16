@@ -8,7 +8,7 @@ class Tile
         @bomb = is_bomb
         @value = colour_value(value)
         @faceup = false
-        @back = " ".colorize(:background => :light_black)
+        @back = "  ".colorize(:background => :light_black)
         @flagged = false
     end
 
